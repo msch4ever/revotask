@@ -1,33 +1,34 @@
 package com.los.revotask.model.account;
 
+import com.los.revotask.model.user.User;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 
+@Entity
 public class Account {
-
-    private static long increment = 0;
 
     private long accountId;
     private String accountName;
     private BigDecimal balance;
-    private long userId;
 
     public Account() {
     }
 
-    public Account(String accountName, BigDecimal balance, long userId) {
-        this.accountId = increment;
+    public Account(String accountName, BigDecimal balance) {
         this.accountName = accountName;
         this.balance = balance;
-        this.userId = userId;
-        increment++;
     }
 
-    public Account(String accountName, long userId) {
+    public Account(String accountName) {
         this.accountName = accountName;
         this.balance = BigDecimal.ZERO;
-        this.userId = userId;
     }
 
+    @Id
+    @GeneratedValue(generator="increment")
+    @GenericGenerator(name="increment", strategy = "increment")
     public long getAccountId() {
         return accountId;
     }
@@ -52,13 +53,14 @@ public class Account {
         this.balance = balance;
     }
 
-    public long getUserId() {
-        return userId;
+    /*@OneToOne(targetEntity = User.class)
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
+    public void setUser(User user) {
+        this.user = user;
+    }*/
 
     @Override
     public boolean equals(Object o) {
@@ -70,7 +72,7 @@ public class Account {
         }
         Account account = (Account) o;
         return getAccountId() == account.getAccountId()
-                && getUserId() == account.getUserId()
+                //&& getUser().equals(account.getUser())
                 && getAccountName().equals(account.getAccountName())
                 && getBalance().equals(account.getBalance());
     }
@@ -79,13 +81,13 @@ public class Account {
     public int hashCode() {
         int result = (int) (getAccountId() ^ (getAccountId() >>> 32));
         result = 31 * result + getAccountName().hashCode();
-        result = 31 * result + getBalance().hashCode();
-        result = 31 * result + (int) (getUserId() ^ (getUserId() >>> 32));
+        result = 31 * result + (getBalance() != null ? getBalance().hashCode() : 0);
+        //result = 31 * result + getUser().hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return "Account{accountId: " + accountId + ", accountName: '" + accountName + "', balance: " + balance +'}';
+        return "Account {accountId: " + accountId + ", accountName: '" + accountName + "', balance: " + balance +'}';
     }
 }

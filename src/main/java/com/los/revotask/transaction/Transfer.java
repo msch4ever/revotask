@@ -1,26 +1,32 @@
 package com.los.revotask.transaction;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+
+@Entity
 public class Transfer {
 
-    private static long increment = 0;
+    private long transferId;
+    private long sourceAccountId;
+    private long destinationAccountId;
+    private BigDecimal amount;
+    private BigDecimal sourceStartBalance;
+    private BigDecimal destinationStartBalance;
+    private BigDecimal sourceResultBalance;
+    private BigDecimal destinationResultBalance;
+    private Instant entryTime;
 
-    private final long transferId;
-    private final long sourceAccountId;
-    private final long destinationAccountId;
-    private final BigDecimal amount;
-    private final BigDecimal sourceStartBalance;
-    private final BigDecimal destinationStartBalance;
-    private final BigDecimal sourceResultBalance;
-    private final BigDecimal destinationResultBalance;
-    private final Instant entryTime;
+    public Transfer() {
+    }
 
     public Transfer(long sourceAccountId, long destinationAccountId, TransferInfo info) {
-        this.transferId = increment;
         this.sourceAccountId = sourceAccountId;
         this.destinationAccountId = destinationAccountId;
         this.amount = info.getAmount();
@@ -28,44 +34,82 @@ public class Transfer {
         this.destinationStartBalance = info.getDestinationStartBalance();
         this.sourceResultBalance = info.getSourceResultBalance();
         this.destinationResultBalance = info.getDestinationResultBalance();
-        this.entryTime = Instant.now();
-        increment++;
     }
 
+    @Id
+    @GeneratedValue(generator="increment")
+    @GenericGenerator(name="increment", strategy = "increment")
     public long getTransferId() {
         return transferId;
+    }
+
+    public void setTransferId(long transferId) {
+        this.transferId = transferId;
     }
 
     public long getSourceAccountId() {
         return sourceAccountId;
     }
 
+    public void setSourceAccountId(long sourceAccountId) {
+        this.sourceAccountId = sourceAccountId;
+    }
+
     public long getDestinationAccountId() {
         return destinationAccountId;
+    }
+
+    public void setDestinationAccountId(long destinationAccountId) {
+        this.destinationAccountId = destinationAccountId;
     }
 
     public BigDecimal getAmount() {
         return amount;
     }
 
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
     public BigDecimal getSourceStartBalance() {
         return sourceStartBalance;
+    }
+
+    public void setSourceStartBalance(BigDecimal sourceStartBalance) {
+        this.sourceStartBalance = sourceStartBalance;
     }
 
     public BigDecimal getDestinationStartBalance() {
         return destinationStartBalance;
     }
 
+    public void setDestinationStartBalance(BigDecimal destinationStartBalance) {
+        this.destinationStartBalance = destinationStartBalance;
+    }
+
     public BigDecimal getSourceResultBalance() {
         return sourceResultBalance;
+    }
+
+    public void setSourceResultBalance(BigDecimal sourceResultBalance) {
+        this.sourceResultBalance = sourceResultBalance;
     }
 
     public BigDecimal getDestinationResultBalance() {
         return destinationResultBalance;
     }
 
+    public void setDestinationResultBalance(BigDecimal destinationResultBalance) {
+        this.destinationResultBalance = destinationResultBalance;
+    }
+
+    @CreationTimestamp
     public Instant getEntryTime() {
         return entryTime;
+    }
+
+    public void setEntryTime(Instant entryTime) {
+        this.entryTime = entryTime;
     }
 
     @Override
@@ -80,7 +124,7 @@ public class Transfer {
                 ", sourceResultBalance:" + sourceResultBalance +
                 ", destinationResultBalance:" + destinationResultBalance +
                 ", entryTime:" + entryTime.atZone(ZoneId.of("UTC"))
-                                          .format(DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss.SSS")) +
+                                          .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")) +
                 '}';
     }
 }
