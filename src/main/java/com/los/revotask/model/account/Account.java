@@ -53,15 +53,6 @@ public class Account {
         this.balance = balance;
     }
 
-    /*@OneToOne(targetEntity = User.class)
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }*/
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -72,7 +63,6 @@ public class Account {
         }
         Account account = (Account) o;
         return getAccountId() == account.getAccountId()
-                //&& getUser().equals(account.getUser())
                 && getAccountName().equals(account.getAccountName())
                 && getBalance().equals(account.getBalance());
     }
@@ -82,7 +72,6 @@ public class Account {
         int result = (int) (getAccountId() ^ (getAccountId() >>> 32));
         result = 31 * result + getAccountName().hashCode();
         result = 31 * result + (getBalance() != null ? getBalance().hashCode() : 0);
-        //result = 31 * result + getUser().hashCode();
         return result;
     }
 

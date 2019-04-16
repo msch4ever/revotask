@@ -11,6 +11,7 @@ import com.los.revotask.util.EventType;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 public class TransferService {
@@ -25,24 +26,25 @@ public class TransferService {
         this.transferDao = transferDao;
     }
 
-    public boolean transferMoney(long sourceUserId, long destinationUserId, BigDecimal amount) {
+    public Optional<Transfer> transferMoney(long sourceUserId, long destinationUserId, BigDecimal amount) {
         User sourceUser = userService.findById(sourceUserId);
         User destinationUser = userService.findById(destinationUserId);
         return transferMoney(sourceUser.getAccount(), destinationUser.getAccount(), amount);
     }
 
-    private boolean transferMoney(Account source, Account destination, BigDecimal amount) {
+    private Optional<Transfer> transferMoney(Account source, Account destination, BigDecimal amount) {
         if (!accountService.isEnoughBalance(source, amount)) {
-            return false;
+            return Optional.empty();
         }
 
         TransferInfo info = new TransferInfo(source, destination, amount);
         doMoneyMovement(source, destination, info);
 
         if (!validateTransfer(source, destination, info, amount)) {
-            return rollbackTransfer(source, destination, info);
+            rollbackTransfer(source, destination, info);
+            return Optional.empty();
         }
-        return commitTransfer(source, destination, info);
+        return Optional.of(commitTransfer(source, destination, info));
     }
 
     private void doMoneyMovement(Account source, Account destination, TransferInfo info) {
@@ -64,7 +66,7 @@ public class TransferService {
         return false;
     }
 
-    private boolean commitTransfer(Account source, Account destination, TransferInfo info) {
+    private Transfer commitTransfer(Account source, Account destination, TransferInfo info) {
         Transfer transfer = new Transfer(source.getAccountId(), destination.getAccountId(), info);
         Ledger sourceLedger = new Ledger(source.getAccountId(), info.getSourceStartBalance(),
                         info.getSourceResultBalance(), info.getAmount(), EventType.TRANSFER_SOURCE);
@@ -73,10 +75,10 @@ public class TransferService {
         accountService.updateAccount(source, sourceLedger);
         accountService.updateAccount(destination, destinationLedger);
         saveTransfer(transfer);
-        return true;
+        return transfer;
     }
 
-    private long saveTransfer(Transfer transfer) {
+    public long saveTransfer(Transfer transfer) {
         return transferDao.save(transfer);
     }
 
