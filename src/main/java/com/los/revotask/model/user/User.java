@@ -1,10 +1,14 @@
 package com.los.revotask.model.user;
 
 import com.los.revotask.model.account.Account;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
+import java.math.BigDecimal;
+
+@Entity
 public class User {
-
-    private static long increment = 0;
 
     private long userId;
     private String userName;
@@ -14,12 +18,18 @@ public class User {
     }
 
     public User(String userName) {
-        this.userId = increment;
         this.userName = userName;
-        this.account = new Account("Main account", userId);
-        increment++;
+        this.account = new Account("Main account");
     }
 
+    public User(String userName, String accountName, BigDecimal amount) {
+        this.userName = userName;
+        this.account = new Account(accountName, amount);
+    }
+
+    @Id
+    @GeneratedValue(generator="increment")
+    @GenericGenerator(name="increment", strategy = "increment")
     public long getUserId() {
         return userId;
     }
@@ -36,6 +46,9 @@ public class User {
         this.userName = userName;
     }
 
+    @OneToOne(targetEntity = Account.class, fetch = FetchType.EAGER)
+    @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
+    @JoinColumn(name = "ACCOUNTID")
     public Account getAccount() {
         return account;
     }
