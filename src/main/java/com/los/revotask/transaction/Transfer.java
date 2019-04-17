@@ -113,6 +113,54 @@ public class Transfer {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Transfer)) return false;
+
+        Transfer transfer = (Transfer) o;
+
+        if (getTransferId() != transfer.getTransferId()) {
+            return false;
+        }
+        if (getSourceAccountId() != transfer.getSourceAccountId()) {
+            return false;
+        }
+        if (getDestinationAccountId() != transfer.getDestinationAccountId()) {
+            return false;
+        }
+        if (getAmount().compareTo((transfer.getAmount())) != 0) {
+            return false;
+        }
+        if (getSourceStartBalance().compareTo((transfer.getSourceStartBalance())) != 0) {
+            return false;
+        }
+        if (getDestinationStartBalance().compareTo((transfer.getDestinationStartBalance())) != 0) {
+            return false;
+        }
+        if (getSourceResultBalance().compareTo((transfer.getSourceResultBalance())) != 0) {
+            return false;
+        }
+        if (getDestinationResultBalance().compareTo((transfer.getDestinationResultBalance())) != 0) {
+            return false;
+        }
+        return getEntryTime().equals(transfer.getEntryTime());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (getTransferId() ^ (getTransferId() >>> 32));
+        result = 31 * result + (int) (getSourceAccountId() ^ (getSourceAccountId() >>> 32));
+        result = 31 * result + (int) (getDestinationAccountId() ^ (getDestinationAccountId() >>> 32));
+        result = 31 * result + getAmount().hashCode();
+        result = 31 * result + getSourceStartBalance().hashCode();
+        result = 31 * result + getDestinationStartBalance().hashCode();
+        result = 31 * result + getSourceResultBalance().hashCode();
+        result = 31 * result + getDestinationResultBalance().hashCode();
+        result = 31 * result + getEntryTime().hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Transfer {" +
                 "transferId:" + transferId +

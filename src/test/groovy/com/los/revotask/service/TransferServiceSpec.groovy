@@ -1,5 +1,7 @@
 package com.los.revotask.service
 
+import static com.los.revotask.TestUtils.*
+
 import com.los.revotask.model.account.Account
 import com.los.revotask.model.account.Ledger
 import com.los.revotask.model.user.User
@@ -15,7 +17,7 @@ class TransferServiceSpec extends Specification {
         AccountService accountService = Mock()
         UserService userService = Mock()
         TransferDao transferDao = Mock()
-        
+    
         service = new TransferService(accountService, userService, transferDao)
     }
     
@@ -68,9 +70,5 @@ class TransferServiceSpec extends Specification {
             decimal(50)    | decimal(50)     | decimal(150)         | true       | 1
             decimal(150)   | decimal(100)    | decimal(100)         | false      | 0
         
-    }
-    
-    private static decimal(double amount) {
-        return new BigDecimal(amount)
     }
 }

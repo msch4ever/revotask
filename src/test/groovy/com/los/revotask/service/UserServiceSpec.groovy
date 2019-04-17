@@ -1,5 +1,7 @@
 package com.los.revotask.service
 
+import static com.los.revotask.TestUtils.*
+
 import com.los.revotask.model.user.User
 import com.los.revotask.persistence.UserDao
 import spock.lang.Specification
@@ -15,7 +17,7 @@ class UserServiceSpec extends Specification {
     
     void "Should create user"() {
         when:
-            service.createUser('userName', 'newAccount', new BigDecimal(1))
+            service.createUser('userName', 'newAccount', decimal(1))
         then:
             1 * service.userDao.save(_)
     }
@@ -25,6 +27,13 @@ class UserServiceSpec extends Specification {
             service.findById(1L)
         then:
             1 * service.userDao.findById(User.class, _ as Long)
+    }
+    
+    void "Should users by name"() {
+        when:
+            service.findByName("userName")
+        then:
+            1 * service.userDao.findByName("userName")
     }
     
     void "Should get All users"() {

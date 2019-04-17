@@ -1,6 +1,5 @@
 package com.los.revotask.model.account;
 
-import com.los.revotask.model.user.User;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -64,7 +63,7 @@ public class Account {
         Account account = (Account) o;
         return getAccountId() == account.getAccountId()
                 && getAccountName().equals(account.getAccountName())
-                && getBalance().equals(account.getBalance());
+                && getBalance().compareTo(account.getBalance()) == 0;
     }
 
     @Override
