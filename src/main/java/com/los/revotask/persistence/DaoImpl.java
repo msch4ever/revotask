@@ -35,7 +35,9 @@ public class DaoImpl<T> implements Dao<T> {
     @Override
     public T findById(Class<T> c, long id) {
         Session session = sf.openSession();
-        return c.cast(session.get(c, id));
+        T result = c.cast(session.get(c, id));
+        session.close();
+        return result;
     }
     @Override
     public List<T> getAll(Class<T> c) {
@@ -45,7 +47,9 @@ public class DaoImpl<T> implements Dao<T> {
         Root<T> root = criteriaQuery.from(c);
         criteriaQuery.select(root);
         Query<T> query = session.createQuery(criteriaQuery);
-        return query.getResultList();
+        List<T> resultList = query.getResultList();
+        session.close();
+        return resultList;
     }
 
     @Override
@@ -65,9 +69,4 @@ public class DaoImpl<T> implements Dao<T> {
         session.getTransaction().commit();
         session.close();
     }
-
-    Session openSession() {
-        return sf.withOptions().jdbcTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC"))).openSession();
-    }
-
 }

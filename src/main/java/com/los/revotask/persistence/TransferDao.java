@@ -23,7 +23,9 @@ public class TransferDao extends DaoImpl<Transfer> {
 
         criteriaQuery.select(root).where(builder.or(sourceAccountId, destinationAccountId));
         Query<Transfer> query = session.createQuery(criteriaQuery);
-        return query.getResultList();
+        List<Transfer> resultList = query.getResultList();
+        session.close();
+        return resultList;
     }
 
 }

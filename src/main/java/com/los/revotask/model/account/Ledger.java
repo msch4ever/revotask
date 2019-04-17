@@ -77,11 +77,11 @@ public class Ledger {
         this.amount = amount;
     }
 
+    @CreationTimestamp
     public Instant getEntryTime() {
         return entryTime;
     }
 
-    @CreationTimestamp
     public void setEntryTime(Instant entryTime) {
         this.entryTime = entryTime;
     }
@@ -92,6 +92,46 @@ public class Ledger {
 
     public void setEventType(String eventType) {
         this.eventType = eventType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Ledger)) return false;
+
+        Ledger ledger = (Ledger) o;
+
+        if (getLedgerId() != ledger.getLedgerId()) {
+            return false;
+        }
+        if (getAccountId() != ledger.getAccountId()) {
+            return false;
+        }
+        if (getStartBalance().compareTo(ledger.getStartBalance()) != 0) {
+            return false;
+        }
+        if (getEndBalance().compareTo(ledger.getEndBalance()) != 0) {
+            return false;
+        }
+        if (getAmount().compareTo(ledger.getAmount()) != 0) {
+            return false;
+        }
+        if (!getEntryTime().equals(ledger.getEntryTime())) {
+            return false;
+        }
+        return getEventType().equals(ledger.getEventType());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (getLedgerId() ^ (getLedgerId() >>> 32));
+        result = 31 * result + (int) (getAccountId() ^ (getAccountId() >>> 32));
+        result = 31 * result + getStartBalance().hashCode();
+        result = 31 * result + getEndBalance().hashCode();
+        result = 31 * result + getAmount().hashCode();
+        result = 31 * result + getEntryTime().hashCode();
+        result = 31 * result + getEventType().hashCode();
+        return result;
     }
 
     @Override

@@ -38,10 +38,6 @@ public class SessionFactoryProvider {
         return sessionFactory;
     }
 
-    public Session openSession() {
-        return sessionFactory.withOptions().jdbcTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC"))).openSession();
-    }
-
     public static SessionFactoryProvider getInstance() {
         return InstanceKeeper.INSTANCE;
     }
