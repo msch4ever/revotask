@@ -25,8 +25,7 @@ class DaoImplSpec extends Specification {
         when:
             def result = dao.save(givenUser)
         then:
-            result == 1L
-        and:
+            result
             User resultUser = dao.findById(User.class, result)
             resultUser.userId == result
             resultUser.getUserName() == givenUser.getUserName()

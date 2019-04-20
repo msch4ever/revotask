@@ -1,8 +1,10 @@
 package com.los.revotask.controller;
 
+import com.los.revotask.controller.routes.UserResponseError;
 import com.los.revotask.controller.routes.UserRouteProvider;
 
 import static com.los.revotask.util.JsonUtils.json;
+import static com.los.revotask.util.JsonUtils.toJson;
 import static spark.Spark.*;
 
 public class UserController {
@@ -16,6 +18,7 @@ public class UserController {
         findUserById();
         createUser();
         updateUser();
+        handleException();
     }
 
     private void getAll() {
@@ -36,5 +39,12 @@ public class UserController {
 
     private void responseAsJson() {
         before((req, res) -> res.type("application/json"));
+    }
+
+    private void handleException() {
+        exception(IllegalArgumentException.class, (e, req, res) -> {
+            res.status(400);
+            res.body(toJson(new UserResponseError(e)));
+        });
     }
 }

@@ -15,11 +15,11 @@ public class UserService {
     }
 
     public User createUser(String userName, String accountName, BigDecimal accountAmount) {
-        if (userName == null) {
-            return null;
+        if (userName == null || userName.isEmpty()) {
+            throw new IllegalArgumentException("userName can not be null");
         }
         User newUser;
-        if (accountAmount != null && accountName != null) {
+        if (accountAmount != null && accountName != null && !accountName.isEmpty()) {
             newUser = new User(userName, accountName, accountAmount);
         } else {
             newUser = new User(userName);
@@ -45,9 +45,12 @@ public class UserService {
     }
 
     public User update(Long userId, String newUserName) {
+        if (newUserName == null || newUserName.isEmpty()) {
+            throw new IllegalArgumentException("new userName can not be null");
+        }
         User userToUpdate = userDao.findById(User.class, userId);
         if (userToUpdate == null) {
-            return null;
+            throw new IllegalArgumentException("could not find user with userId= " + userId);
         }
         userToUpdate.setUserName(newUserName);
         userDao.update(userToUpdate);
