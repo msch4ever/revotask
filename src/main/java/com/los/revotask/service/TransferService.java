@@ -6,7 +6,7 @@ import com.los.revotask.model.user.User;
 import com.los.revotask.persistence.TransferDao;
 import com.los.revotask.transaction.Transfer;
 import com.los.revotask.transaction.TransferInfo;
-import com.los.revotask.util.EventType;
+import com.los.revotask.transaction.EventType;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;

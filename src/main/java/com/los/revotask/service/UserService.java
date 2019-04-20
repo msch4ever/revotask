@@ -14,9 +14,18 @@ public class UserService {
         this.userDao = userDao;
     }
 
-    public long createUser(String userName, String accountName, BigDecimal accountAmount) {
-        User newUser = new User(userName, accountName, accountAmount);
-        return userDao.save(newUser);
+    public User createUser(String userName, String accountName, BigDecimal accountAmount) {
+        if (userName == null) {
+            return null;
+        }
+        User newUser;
+        if (accountAmount != null && accountName != null) {
+            newUser = new User(userName, accountName, accountAmount);
+        } else {
+            newUser = new User(userName);
+        }
+        userDao.save(newUser);
+        return newUser;
     }
 
     public User findById(long id) {
@@ -35,7 +44,13 @@ public class UserService {
         userDao.delete(user);
     }
 
-    public void update(User user) {
-        userDao.update(user);
+    public User update(Long userId, String newUserName) {
+        User userToUpdate = userDao.findById(User.class, userId);
+        if (userToUpdate == null) {
+            return null;
+        }
+        userToUpdate.setUserName(newUserName);
+        userDao.update(userToUpdate);
+        return userToUpdate;
     }
 }

@@ -6,7 +6,7 @@ import com.los.revotask.model.user.User
 import com.los.revotask.persistence.Dao
 import com.los.revotask.persistence.DaoImpl
 import com.los.revotask.persistence.UserDao
-import com.los.revotask.util.EventType
+import com.los.revotask.transaction.EventType
 import spock.lang.Specification
 
 import static com.los.revotask.TestUtils.cleanTables
