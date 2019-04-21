@@ -40,8 +40,12 @@ public class UserService {
         return userDao.getAll(User.class);
     }
 
-    public void delete(User user) {
-        userDao.delete(user);
+    public void delete(Long userId) {
+        User userToDelete = userDao.findById(User.class, userId);
+        if (userToDelete == null) {
+            throw new IllegalArgumentException("Could not find user with userId: " + userId);
+        }
+        userDao.delete(userToDelete);
     }
 
     public User update(Long userId, String newUserName) {
@@ -50,7 +54,7 @@ public class UserService {
         }
         User userToUpdate = userDao.findById(User.class, userId);
         if (userToUpdate == null) {
-            throw new IllegalArgumentException("could not find user with userId= " + userId);
+            throw new IllegalArgumentException("could not find user with userId: " + userId);
         }
         userToUpdate.setUserName(newUserName);
         userDao.update(userToUpdate);

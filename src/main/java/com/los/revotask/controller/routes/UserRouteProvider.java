@@ -27,7 +27,7 @@ public class UserRouteProvider {
                 return user;
             }
             res.status(400);
-            return new UserResponseError("No user with id :%s found", id);
+            return new ResponseMessage("No user with id :%s found", id);
         };
     }
 
@@ -45,6 +45,14 @@ public class UserRouteProvider {
             Long userId = Long.valueOf(req.params(":id"));
             String newUserName = req.queryParams("newUserName");
             return userService.update(userId, newUserName);
+        };
+    }
+
+    public Route provideDeleteUserRoute() {
+        return (req, res) -> {
+            Long userId = Long.valueOf(req.params(":id"));
+            userService.delete(userId);
+            return new ResponseMessage("User with userId: " + userId + " has been successfully deleted!");
         };
     }
 }

@@ -1,14 +1,14 @@
 package com.los.revotask.controller.routes;
 
-public class UserResponseError {
+public class ResponseMessage {
 
     private String message;
 
-    public UserResponseError(String message, String... args) {
+    public ResponseMessage(String message, String... args) {
         this.message = String.format(message, args);
     }
 
-    public UserResponseError(Exception e) {
+    public ResponseMessage(Exception e) {
         this.message = e.getMessage();
     }
 

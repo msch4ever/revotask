@@ -72,6 +72,17 @@ class UserControllerSpec extends Specification {
             json.userId == givenUser.userId
     }
     
+    void 'Should delete existing User by id'() {
+        setup:
+            User givenUser = new User(userName: 'testUser')
+            UserDao dao = new UserDao()
+            dao.save(givenUser)
+        when:
+            request('PUT', '/users/delete/' + givenUser.userId)
+        then:
+            !dao.findById(User.class, givenUser.userId)
+    }
+    
     private static TestResponse request(String method, String path) {
         try {
             def url = new URL('http://localhost:4567' + path)

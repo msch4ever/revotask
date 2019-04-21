@@ -1,6 +1,6 @@
 package com.los.revotask.controller;
 
-import com.los.revotask.controller.routes.UserResponseError;
+import com.los.revotask.controller.routes.ResponseMessage;
 import com.los.revotask.controller.routes.UserRouteProvider;
 
 import static com.los.revotask.util.JsonUtils.json;
@@ -18,6 +18,7 @@ public class UserController {
         findUserById();
         createUser();
         updateUser();
+        deleteUser();
         handleException();
     }
 
@@ -37,6 +38,9 @@ public class UserController {
         put("/users/:id", userRouteProvider.provideUpdateUserRoute(), json());
     }
 
+    private void deleteUser() {
+        put("/users/delete/:id", userRouteProvider.provideDeleteUserRoute(), json());
+    }
     private void responseAsJson() {
         before((req, res) -> res.type("application/json"));
     }
@@ -44,7 +48,7 @@ public class UserController {
     private void handleException() {
         exception(IllegalArgumentException.class, (e, req, res) -> {
             res.status(400);
-            res.body(toJson(new UserResponseError(e)));
+            res.body(toJson(new ResponseMessage(e)));
         });
     }
 }

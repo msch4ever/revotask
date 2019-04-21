@@ -12,8 +12,8 @@ class UserServiceSpec extends Specification {
     User user
     
     void setup() {
+        user = new User(userId: 1L, userName: 'oldUserName')
         UserDao userDao = Mock() {
-            user = new User(userId: 1L, userName: 'oldUserName')
             findById(User.class, _ as Long) >> user
         }
         service = new UserService(userDao)
@@ -70,11 +70,21 @@ class UserServiceSpec extends Specification {
     }
     
     void "Should delete user"() {
-        setup:
-            User user = new User()
         when:
-            service.delete(user)
+            service.delete(user.userId)
         then:
             1 * service.userDao.delete(user)
+    }
+    
+    void "Should not delete user that does not exist"() {
+        setup:
+            UserDao dao = Mock() {
+                findById(User.class, 99L) >> null
+            }
+            UserService userService = new UserService(dao)
+        when:
+            userService.delete(99L)
+        then:
+            thrown(IllegalArgumentException)
     }
 }
