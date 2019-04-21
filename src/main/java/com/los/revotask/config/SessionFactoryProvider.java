@@ -1,14 +1,10 @@
 package com.los.revotask.config;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.AvailableSettings;
-
-import java.time.ZoneId;
-import java.util.TimeZone;
 
 public class SessionFactoryProvider {
 

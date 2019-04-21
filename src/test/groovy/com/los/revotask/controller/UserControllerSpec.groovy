@@ -13,12 +13,12 @@ import static com.los.revotask.TestUtils.*
 class UserControllerSpec extends Specification {
     
     void setup() {
-        cleanTables()
         Application.main(null)
     }
     
     void cleanup() {
         Spark.stop()
+        cleanTables()
     }
     
     void 'Should create new User'() {
@@ -34,10 +34,11 @@ class UserControllerSpec extends Specification {
     
     void 'Should update existing User'() {
         setup:
+            User givenUser = new User(userName: 'testUser')
             UserDao dao = new UserDao()
-            dao.save(new User(userName: 'testUser'))
+            dao.save(givenUser)
         when:
-            TestResponse res = request('PUT', '/users/1?newUserName=newName')
+            TestResponse res = request('PUT', '/users/' + givenUser.userId + '?newUserName=newName')
         then:
             Map<String, String> json = res.json()
             res.status == 200
@@ -59,15 +60,16 @@ class UserControllerSpec extends Specification {
     
     void 'Should find existing User by id'() {
         setup:
+            User givenUser = new User(userName: 'testUser')
             UserDao dao = new UserDao()
-            dao.save(new User(userName: 'testUser'))
+            dao.save(givenUser)
         when:
-            TestResponse res = request('GET', '/users/1')
+            TestResponse res = request('GET', '/users/' + givenUser.userId)
         then:
             Map<String, String> json = res.json()
             res.status == 200
             json.userName == 'testUser'
-            json.userId == 1L
+            json.userId == givenUser.userId
     }
     
     private static TestResponse request(String method, String path) {

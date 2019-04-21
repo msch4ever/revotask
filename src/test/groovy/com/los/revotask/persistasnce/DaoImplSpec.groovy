@@ -28,8 +28,8 @@ class DaoImplSpec extends Specification {
             result
             User resultUser = dao.findById(User.class, result)
             resultUser.userId == result
-            resultUser.getUserName() == givenUser.getUserName()
-            resultUser.getAccount() == givenUser.getAccount()
+            resultUser.userName == givenUser.userName
+            resultUser.account == givenUser.account
     }
     
     void 'Should fetch all entities from DB'() {
@@ -57,15 +57,15 @@ class DaoImplSpec extends Specification {
             Dao<Account> accountDao = new DaoImpl<>()
             Account givenAccount = new Account('accountName')
             accountDao.save(givenAccount)
-            BigDecimal givenBalance = givenAccount.getBalance()
+            BigDecimal givenBalance = givenAccount.balance
         when:
             givenAccount.setBalance(decimal(100))
             accountDao.update(givenAccount)
-            Account resultAccount = accountDao.findById(Account.class, givenAccount.getAccountId())
+            Account resultAccount = accountDao.findById(Account.class, givenAccount.accountId)
         then:
-            resultAccount.accountId == givenAccount.getAccountId()
-            resultAccount.getBalance().compareTo(givenBalance) != 0
-            resultAccount.getBalance().compareTo(decimal(100)) == 0
+            resultAccount.accountId == givenAccount.accountId
+            resultAccount.balance.compareTo(givenBalance) != 0
+            resultAccount.balance.compareTo(decimal(100)) == 0
     }
     
     void 'Shuold delete entity from the DB'() {

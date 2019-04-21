@@ -49,6 +49,7 @@ public class User {
     @OneToOne(targetEntity = Account.class, fetch = FetchType.EAGER)
     @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
     @JoinColumn(name = "ACCOUNTID")
+    @org.hibernate.annotations.ForeignKey(name = "ACCOUNT_FK")
     public Account getAccount() {
         return account;
     }
