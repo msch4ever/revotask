@@ -1,5 +1,5 @@
 group 'com.los'
-version '1.3-SNAPSHOT'
+version '2.0-SNAPSHOT'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
@@ -22,4 +22,22 @@ dependencies {
     testCompile group: 'org.objenesis', name: 'objenesis', version: '3.0.1'
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.199'
 
+}
+
+task fatJar(type: Jar) {
+    baseName = project.name + '-with-dependencies'
+    
+    manifest {
+        attributes 'Implementation-Title': 'Standalone Jar',
+                'Implementation-Version': version,
+                'Main-Class': 'com.los.revotask.Main'
+    }
+    
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    
+    with jar
 }
