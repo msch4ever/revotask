@@ -1,4 +1,4 @@
-package com.los.revotask;
+package com.los.revotask.util;
 
 import javax.sound.sampled.*;
 import java.net.URL;

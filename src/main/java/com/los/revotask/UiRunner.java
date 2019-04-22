@@ -1,6 +1,8 @@
 package com.los.revotask;
 
 
+import com.los.revotask.util.EasterEgg;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
