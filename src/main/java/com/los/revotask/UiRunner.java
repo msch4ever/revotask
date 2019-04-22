@@ -6,8 +6,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class UiRunner extends JFrame {
+    private EasterEgg egg;
 
     public UiRunner() {
+        egg = new EasterEgg();
         initUI();
     }
 
@@ -19,19 +21,24 @@ public class UiRunner extends JFrame {
         JButton runButton = new JButton("Run server");
         runButton.setToolTipText("Run rest server");
 
-        JButton exitButton = new JButton("Stop");
+        JButton exitButton = new JButton("Stop Server");
         exitButton.setToolTipText("Stop rest server");
 
+        JButton stopThisButton = new JButton("Stop This");
+        stopThisButton.setToolTipText("Stop This!");
+
         runButton.addActionListener((ActionEvent event) -> {
-            new EasterEgg().runEasterEgg();
+            egg.play();
             ApplicationServer.startServer();
         });
         exitButton.addActionListener((ActionEvent event) -> System.exit(0));
 
-        createLayout(runButton, exitButton, panel);
+        stopThisButton.addActionListener((ActionEvent event) -> egg.stop());
+
+        createLayout(runButton, exitButton, stopThisButton, panel);
 
         setTitle("REVOTASK");
-        setSize(170, 100);
+        setSize(170, 150);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
@@ -45,12 +52,15 @@ public class UiRunner extends JFrame {
         gl.setHorizontalGroup(gl.createParallelGroup()
                 .addGroup(gl.createSequentialGroup().addComponent(arg[0], 150, 150, 150))
                 .addGroup(gl.createSequentialGroup().addComponent(arg[1], 150, 150, 150))
+                .addGroup(gl.createSequentialGroup().addComponent(arg[2], 150, 150, 150))
         );
 
         gl.setVerticalGroup(gl.createSequentialGroup()
                 .addComponent(arg[0])
                 .addGap(4)
                 .addComponent(arg[1])
+                .addGap(4)
+                .addComponent(arg[2])
                 .addGap(4)
         );
         pack();
