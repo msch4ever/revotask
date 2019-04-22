@@ -3,7 +3,7 @@ package com.los.revotask.service;
 import com.los.revotask.model.account.Account;
 import com.los.revotask.model.account.Ledger;
 import com.los.revotask.persistence.Dao;
-import com.los.revotask.util.EventType;
+import com.los.revotask.transaction.EventType;
 
 import java.math.BigDecimal;
 import java.util.List;

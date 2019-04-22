@@ -14,9 +14,18 @@ public class UserService {
         this.userDao = userDao;
     }
 
-    public long createUser(String userName, String accountName, BigDecimal accountAmount) {
-        User newUser = new User(userName, accountName, accountAmount);
-        return userDao.save(newUser);
+    public User createUser(String userName, String accountName, BigDecimal accountAmount) {
+        if (userName == null || userName.isEmpty()) {
+            throw new IllegalArgumentException("userName can not be null");
+        }
+        User newUser;
+        if (accountAmount != null && accountName != null && !accountName.isEmpty()) {
+            newUser = new User(userName, accountName, accountAmount);
+        } else {
+            newUser = new User(userName);
+        }
+        userDao.save(newUser);
+        return newUser;
     }
 
     public User findById(long id) {
@@ -31,11 +40,24 @@ public class UserService {
         return userDao.getAll(User.class);
     }
 
-    public void delete(User user) {
-        userDao.delete(user);
+    public void delete(Long userId) {
+        User userToDelete = userDao.findById(User.class, userId);
+        if (userToDelete == null) {
+            throw new IllegalArgumentException("Could not find user with userId: " + userId);
+        }
+        userDao.delete(userToDelete);
     }
 
-    public void update(User user) {
-        userDao.update(user);
+    public User update(Long userId, String newUserName) {
+        if (newUserName == null || newUserName.isEmpty()) {
+            throw new IllegalArgumentException("new userName can not be null");
+        }
+        User userToUpdate = userDao.findById(User.class, userId);
+        if (userToUpdate == null) {
+            throw new IllegalArgumentException("could not find user with userId: " + userId);
+        }
+        userToUpdate.setUserName(newUserName);
+        userDao.update(userToUpdate);
+        return userToUpdate;
     }
 }

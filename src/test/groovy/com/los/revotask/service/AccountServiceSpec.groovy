@@ -5,7 +5,7 @@ import static com.los.revotask.TestUtils.*
 import com.los.revotask.model.account.Account
 import com.los.revotask.model.account.Ledger
 import com.los.revotask.persistence.Dao
-import com.los.revotask.util.EventType
+import com.los.revotask.transaction.EventType
 import spock.lang.Specification
 
 import java.time.Instant

@@ -1,4 +1,4 @@
-package com.los.revotask.util;
+package com.los.revotask.transaction;
 
 public enum EventType {
 

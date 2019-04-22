@@ -9,9 +9,13 @@ import spock.lang.Specification
 class UserServiceSpec extends Specification {
     
     UserService service
+    User user
     
     void setup() {
-        UserDao userDao = Mock()
+        user = new User(userId: 1L, userName: 'oldUserName')
+        UserDao userDao = Mock() {
+            findById(User.class, _ as Long) >> user
+        }
         service = new UserService(userDao)
     }
     
@@ -44,20 +48,43 @@ class UserServiceSpec extends Specification {
     }
     
     void "Should update user"() {
-        setup:
-            User user = new User()
         when:
-            service.update(user)
+            User resultUser = service.update(1L, 'newName')
         then:
-            1 * service.userDao.update(user)
+            resultUser.getUserId() == 1L
+            resultUser.getUserName() == 'newName'
+    }
+    
+    void "Should not update user that does not exist"() {
+        setup:
+            UserDao dao = Mock() {
+                findById(User.class, 99L) >> null
+            }
+            UserService userService = new UserService(dao)
+        when:
+            userService.update(99L, newName)
+        then:
+            thrown(IllegalArgumentException)
+        where:
+            newName << ['newName', '', null]
     }
     
     void "Should delete user"() {
-        setup:
-            User user = new User()
         when:
-            service.delete(user)
+            service.delete(user.userId)
         then:
             1 * service.userDao.delete(user)
+    }
+    
+    void "Should not delete user that does not exist"() {
+        setup:
+            UserDao dao = Mock() {
+                findById(User.class, 99L) >> null
+            }
+            UserService userService = new UserService(dao)
+        when:
+            userService.delete(99L)
+        then:
+            thrown(IllegalArgumentException)
     }
 }
