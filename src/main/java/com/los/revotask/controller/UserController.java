@@ -1,54 +1,40 @@
 package com.los.revotask.controller;
 
-import com.los.revotask.controller.routes.ResponseMessage;
 import com.los.revotask.controller.routes.UserRouteProvider;
 
 import static com.los.revotask.util.JsonUtils.json;
-import static com.los.revotask.util.JsonUtils.toJson;
 import static spark.Spark.*;
 
-public class UserController {
+public class UserController extends AbstractController {
 
-    private final UserRouteProvider userRouteProvider;
+    private final UserRouteProvider routeProvider;
 
-    public UserController(UserRouteProvider userRouteProvider) {
-        this.userRouteProvider = userRouteProvider;
-        responseAsJson();
+    public UserController(UserRouteProvider routeProvider) {
+        this.routeProvider = routeProvider;
         getAll();
         findUserById();
         createUser();
         updateUser();
         deleteUser();
-        handleException();
     }
 
     private void getAll() {
-        get("/users", userRouteProvider.provideGetAllRoute(), json());
+        get("/users", routeProvider.provideGetAllRoute(), json());
     }
 
     private void findUserById() {
-        get("/users/:id", userRouteProvider.provideFindByIdRoute(), json());
+        get("/users/:id", routeProvider.provideFindByIdRoute(), json());
     }
 
     private void createUser() {
-        post("/users", userRouteProvider.provideCreateUserRoute(), json());
+        post("/users", routeProvider.provideCreateUserRoute(), json());
     }
 
     private void updateUser() {
-        put("/users/:id", userRouteProvider.provideUpdateUserRoute(), json());
+        put("/users/:id", routeProvider.provideUpdateUserRoute(), json());
     }
 
     private void deleteUser() {
-        put("/users/delete/:id", userRouteProvider.provideDeleteUserRoute(), json());
-    }
-    private void responseAsJson() {
-        before((req, res) -> res.type("application/json"));
-    }
-
-    private void handleException() {
-        exception(IllegalArgumentException.class, (e, req, res) -> {
-            res.status(400);
-            res.body(toJson(new ResponseMessage(e)));
-        });
+        put("/users/delete/:id", routeProvider.provideDeleteUserRoute(), json());
     }
 }
