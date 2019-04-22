@@ -1,7 +1,7 @@
 package com.los.revotask.controller
 
 import com.google.gson.Gson
-import com.los.revotask.Application
+import com.los.revotask.ApplicationServer
 import com.los.revotask.model.user.User
 import com.los.revotask.persistence.UserDao
 import spark.Spark
@@ -13,7 +13,7 @@ import static com.los.revotask.TestUtils.*
 class UserControllerSpec extends Specification {
     
     void setup() {
-        Application.main(null)
+        ApplicationServer.startServer()
     }
     
     void cleanup() {
