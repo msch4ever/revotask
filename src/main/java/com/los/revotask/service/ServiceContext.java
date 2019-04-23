@@ -11,7 +11,9 @@ public class ServiceContext {
     public ServiceContext(final PersistenceContext persistenceContext) {
         final SessionUtils sessionUtils = new SessionUtils();
         this.userService = new UserService(persistenceContext.userDao, sessionUtils);
-        this.accountService = new AccountService(persistenceContext.accountDao, persistenceContext.ledgerDao, sessionUtils);
-        this.transferService = new TransferService(accountService, userService, persistenceContext.transferDao, sessionUtils);
+        this.accountService =
+                new AccountService(persistenceContext.accountDao, persistenceContext.ledgerDao, sessionUtils);
+        this.transferService =
+                new TransferService(accountService, userService, persistenceContext.transferDao, sessionUtils);
     }
 }

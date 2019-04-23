@@ -11,10 +11,10 @@ import spark.Spark;
 public class ApplicationServer {
 
     public static void startServer() {
-        PersistenceContext persistenceContext = new PersistenceContext();
-        ServiceContext serviceContext = new ServiceContext(persistenceContext);
-        UserRouteProvider userRouteProvider = new UserRouteProvider(serviceContext.userService);
-        TransferRouteProvider transferRouteProvider = new TransferRouteProvider(serviceContext.transferService);
+        final PersistenceContext persistenceContext = new PersistenceContext();
+        final ServiceContext serviceContext = new ServiceContext(persistenceContext);
+        final UserRouteProvider userRouteProvider = new UserRouteProvider(serviceContext.userService);
+        final TransferRouteProvider transferRouteProvider = new TransferRouteProvider(serviceContext.transferService);
         new UserController(userRouteProvider);
         new TransferController(transferRouteProvider);
     }
