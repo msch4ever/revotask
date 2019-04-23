@@ -7,6 +7,7 @@ import static spark.Spark.before;
 import static spark.Spark.exception;
 
 public abstract class AbstractController {
+
     protected void responseAsJson() {
         before((req, res) -> res.type("application/json"));
     }
