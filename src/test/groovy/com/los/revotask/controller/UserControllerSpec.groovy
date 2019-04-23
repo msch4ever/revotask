@@ -1,6 +1,6 @@
 package com.los.revotask.controller
 
-import com.los.revotask.ApplicationServer
+import com.los.revotask.app.ApplicationServer
 import com.los.revotask.TestResponse
 import com.los.revotask.model.user.User
 import com.los.revotask.persistence.UserDao

@@ -1,4 +1,4 @@
-package com.los.revotask;
+package com.los.revotask.app;
 
 import javax.swing.*;
 import java.awt.*;
