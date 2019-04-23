@@ -3,9 +3,11 @@ package com.los.revotask.service;
 import com.los.revotask.model.user.User;
 import com.los.revotask.persistence.UserDao;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
+@Transactional
 public class UserService {
 
     private final UserDao userDao;

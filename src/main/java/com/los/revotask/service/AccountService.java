@@ -5,10 +5,12 @@ import com.los.revotask.model.account.Ledger;
 import com.los.revotask.persistence.Dao;
 import com.los.revotask.transaction.EventType;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional
 public class AccountService {
 
     private final Dao<Account> accountDao;
@@ -27,6 +29,7 @@ public class AccountService {
         createAccount(accountName, new BigDecimal(0.0));
     }
 
+    @Transactional(Transactional.TxType.SUPPORTS)
     public void updateAccount(Account account, Ledger ledger) {
         accountDao.update(account);
         ledgerDao.save(ledger);

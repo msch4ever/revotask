@@ -12,7 +12,7 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Transactional
+@Transactional(Transactional.TxType.SUPPORTS)
 public class TransferService {
 
     private final AccountService accountService;
@@ -58,6 +58,7 @@ public class TransferService {
         destination.setBalance(info.getDestinationResultBalance());
     }
 
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     private Transfer commitTransfer(Account source, Account destination, TransferInfo info) {
         Transfer transfer = new Transfer(source.getAccountId(), destination.getAccountId(), info);
         Ledger sourceLedger = new Ledger(source.getAccountId(), info.getSourceStartBalance(),
@@ -67,6 +68,10 @@ public class TransferService {
         accountService.updateAccount(source, sourceLedger);
         accountService.updateAccount(destination, destinationLedger);
         saveTransfer(transfer);
+        int debug = 1;
+        if (debug != 1) {
+            throw new RuntimeException();
+        }
         return transfer;
     }
 
