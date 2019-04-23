@@ -9,8 +9,8 @@ public class ServiceContext {
     public final TransferService transferService;
 
     public ServiceContext(PersistenceContext persistenceContext) {
-        this.userService = new UserService(persistenceContext.userDao);
-        this.accountService = new AccountService(persistenceContext.accountDao, persistenceContext.ledgerDao);
-        this.transferService = new TransferService(accountService, userService, persistenceContext.transferDao);
+        this.userService = new UserService(persistenceContext);
+        this.accountService = new AccountService(persistenceContext);
+        this.transferService = new TransferService(accountService, userService, persistenceContext);
     }
 }

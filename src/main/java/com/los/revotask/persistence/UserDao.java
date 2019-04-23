@@ -18,9 +18,7 @@ public class UserDao extends DaoImpl<User> {
         Root<User> root = criteriaQuery.from(User.class);
         criteriaQuery.select(root).where(builder.equal(root.get("userName"), userName));
         Query<User> query = session.createQuery(criteriaQuery);
-        List<User> result = query.getResultList();
-        session.close();
-        return result;
+        return query.getResultList();
 
     }
 }

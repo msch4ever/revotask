@@ -22,7 +22,7 @@ public class UserRouteProvider {
     public Route provideFindByIdRoute() {
         return (req, res) -> {
             String id = req.params(":id");
-            User user = userService.findById(Long.valueOf(req.params(":id")));
+            User user = userService.findByIdAtomic(Long.valueOf(req.params(":id")));
             if (user != null) {
                 return user;
             }

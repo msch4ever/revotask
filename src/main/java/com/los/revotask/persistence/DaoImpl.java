@@ -8,10 +8,8 @@ import org.hibernate.query.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 import java.util.List;
 
-@Transactional
 public class DaoImpl<T> implements Dao<T> {
 
     final SessionFactory sf;
@@ -22,49 +20,32 @@ public class DaoImpl<T> implements Dao<T> {
 
     @Override
     public long save(T t) {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        long id = (long) session.save(t);
-        session.getTransaction().commit();
-        session.close();
-        return id;
+        return (long) sf.getCurrentSession().save(t);
     }
 
     @Override
     public T findById(Class<T> c, long id) {
-        Session session = sf.openSession();
-        T result = c.cast(session.get(c, id));
-        session.close();
-        return result;
+        Session session = sf.getCurrentSession();
+        return c.cast(session.get(c, id));
     }
     @Override
     public List<T> getAll(Class<T> c) {
-        Session session = sf.openSession();
+        Session session = sf.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(c);
         Root<T> root = criteriaQuery.from(c);
         criteriaQuery.select(root);
         Query<T> query = session.createQuery(criteriaQuery);
-        List<T> resultList = query.getResultList();
-        session.close();
-        return resultList;
+        return query.getResultList();
     }
 
     @Override
     public void update(T t) {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        session.saveOrUpdate(t);
-        session.getTransaction().commit();
-        session.close();
+        sf.getCurrentSession().saveOrUpdate(t);
     }
 
     @Override
     public void delete(T t) {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        session.delete(t);
-        session.getTransaction().commit();
-        session.close();
+        sf.getCurrentSession().delete(t);
     }
 }

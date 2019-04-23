@@ -3,6 +3,7 @@ package com.los.revotask.service;
 import com.los.revotask.model.account.Account;
 import com.los.revotask.model.account.Ledger;
 import com.los.revotask.model.user.User;
+import com.los.revotask.persistence.PersistenceContext;
 import com.los.revotask.persistence.TransferDao;
 import com.los.revotask.transaction.EventType;
 import com.los.revotask.transaction.Transfer;
@@ -13,34 +14,28 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Transactional(Transactional.TxType.SUPPORTS)
-public class TransferService {
+public class TransferService extends AbstractService {
 
     private final AccountService accountService;
     private final UserService userService;
-    private final TransferDao transferDao;
 
-    public TransferService(AccountService accountService, UserService userService, TransferDao transferDao) {
+    public TransferService(AccountService accountService, UserService userService, PersistenceContext persistenceContext) {
+        super(persistenceContext);
         this.accountService = accountService;
         this.userService = userService;
-        this.transferDao = transferDao;
     }
 
     public Transfer transferMoney(long sourceUserId, long destinationUserId, BigDecimal amount) {
+        openAtomicTask();
         User sourceUser = userService.findById(sourceUserId);
         User destinationUser = userService.findById(destinationUserId);
-        validateUsers(sourceUserId, destinationUserId, sourceUser, destinationUser);
+        validateUsers(sourceUser, destinationUser);
         return transferMoney(sourceUser.getAccount(), destinationUser.getAccount(), amount);
     }
 
-    private void validateUsers(long sourceUserId, long destinationUserId, User sourceUser, User destinationUser) {
-        if (sourceUser == null) {
-            throw new IllegalArgumentException("Could not find source user with userId: " + sourceUserId);
-        }
-        if (destinationUser == null) {
-            throw new IllegalArgumentException("Could not find destination user with userId: " + destinationUserId);
-        }
+    private void validateUsers(User sourceUser, User destinationUser) {
         if (sourceUser.equals(destinationUser)) {
-            throw new IllegalArgumentException("Can not perform transfer: source and destination accounts are same!");
+            throw new IllegalArgumentException("Can not perform transfer: source and destination accounts are the same!");
         }
     }
 
@@ -72,18 +67,23 @@ public class TransferService {
         if (debug != 1) {
             throw new RuntimeException();
         }
+        commitAndCloseSession();
         return transfer;
     }
 
     public long saveTransfer(Transfer transfer) {
-        return transferDao.save(transfer);
+        return getTransferDao().save(transfer);
     }
 
     public List<Transfer> getAll() {
-        return transferDao.getAll(Transfer.class);
+        List<Transfer> resultList = getTransferDao().getAll(Transfer.class);
+        commitAndCloseSession();
+        return resultList;
     }
 
     public List<Transfer> findAllByAccountId(long accountId) {
-        return transferDao.findAllByAccountId(accountId);
+        List<Transfer> resultList = getTransferDao().findAllByAccountId(accountId);
+        commitAndCloseSession();
+        return resultList;
     }
 }
