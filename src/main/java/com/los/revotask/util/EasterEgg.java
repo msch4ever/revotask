@@ -1,6 +1,8 @@
 package com.los.revotask.util;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import java.net.URL;
 
 public class EasterEgg {

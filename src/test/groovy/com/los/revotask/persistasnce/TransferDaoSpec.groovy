@@ -1,21 +1,30 @@
 package com.los.revotask.persistasnce
 
-import com.los.revotask.transaction.Transfer
-import com.los.revotask.transaction.TransferInfo
-
-import static com.los.revotask.TestUtils.*
-
 import com.los.revotask.model.account.Account
 import com.los.revotask.persistence.TransferDao
+import com.los.revotask.service.SessionUtils
+import com.los.revotask.transaction.Transfer
+import com.los.revotask.transaction.TransferInfo
 import spock.lang.Specification
+
+import static com.los.revotask.TestUtils.cleanTables
+import static com.los.revotask.TestUtils.decimal
 
 class TransferDaoSpec extends Specification {
     
-    TransferDao dao
+    private SessionUtils sessionUtils
+    private TransferDao dao
     
     void setup() {
-        cleanTables()
+        sessionUtils = new SessionUtils()
+        sessionUtils.openAtomicTask()
         dao = new TransferDao()
+    
+    }
+    
+    void cleanup() {
+        sessionUtils.commitAndCloseSession()
+        cleanTables()
     }
     
     void 'Should find all transfers related to account'() {

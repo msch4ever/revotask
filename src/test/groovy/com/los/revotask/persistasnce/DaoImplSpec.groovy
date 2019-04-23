@@ -6,6 +6,7 @@ import com.los.revotask.model.user.User
 import com.los.revotask.persistence.Dao
 import com.los.revotask.persistence.DaoImpl
 import com.los.revotask.persistence.UserDao
+import com.los.revotask.service.SessionUtils
 import com.los.revotask.transaction.EventType
 import spock.lang.Specification
 
@@ -14,7 +15,15 @@ import static com.los.revotask.TestUtils.decimal
 
 class DaoImplSpec extends Specification {
     
+    private SessionUtils sessionUtils
+    
     void setup() {
+        sessionUtils = new SessionUtils()
+        sessionUtils.openAtomicTask()
+    }
+    
+    void cleanup() {
+        sessionUtils.commitAndCloseSession()
         cleanTables()
     }
     

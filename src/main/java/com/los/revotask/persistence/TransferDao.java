@@ -13,7 +13,7 @@ import java.util.List;
 public class TransferDao extends DaoImpl<Transfer> {
 
     public List<Transfer> findAllByAccountId(long accountId) {
-        Session session = sf.openSession();
+        Session session = sf.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Transfer> criteriaQuery = builder.createQuery(Transfer.class);
         Root<Transfer> root = criteriaQuery.from(Transfer.class);
@@ -24,7 +24,6 @@ public class TransferDao extends DaoImpl<Transfer> {
         criteriaQuery.select(root).where(builder.or(sourceAccountId, destinationAccountId));
         Query<Transfer> query = session.createQuery(criteriaQuery);
         List<Transfer> resultList = query.getResultList();
-        session.close();
         return resultList;
     }
 

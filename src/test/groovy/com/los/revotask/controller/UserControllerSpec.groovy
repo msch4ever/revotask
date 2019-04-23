@@ -1,19 +1,22 @@
 package com.los.revotask.controller
 
-import com.google.gson.Gson
 import com.los.revotask.ApplicationServer
+import com.los.revotask.TestResponse
 import com.los.revotask.model.user.User
 import com.los.revotask.persistence.UserDao
+import com.los.revotask.service.SessionUtils
 import spark.Spark
-import spark.utils.IOUtils
 import spock.lang.Specification
 
 import static com.los.revotask.TestUtils.*
 
 class UserControllerSpec extends Specification {
     
+    private SessionUtils sessionUtils
+    
     void setup() {
         ApplicationServer.startServer()
+        sessionUtils = new SessionUtils()
     }
     
     void cleanup() {
@@ -36,7 +39,7 @@ class UserControllerSpec extends Specification {
         setup:
             User givenUser = new User(userName: 'testUser')
             UserDao dao = new UserDao()
-            dao.save(givenUser)
+            saveUser(sessionUtils, dao, givenUser)
         when:
             TestResponse res = request('PUT', '/users/' + givenUser.userId + '?newUserName=newName')
         then:
@@ -48,8 +51,8 @@ class UserControllerSpec extends Specification {
     void 'Should get all existing Users'() {
         setup:
             UserDao dao = new UserDao()
-            dao.save(new User(userName: 'testUser1'))
-            dao.save(new User(userName: 'testUser2'))
+            saveUser(sessionUtils, dao, new User(userName: 'testUser1'))
+            saveUser(sessionUtils, dao, new User(userName: 'testUser2'))
         when:
             TestResponse res = request('GET', '/users')
         then:
@@ -62,7 +65,7 @@ class UserControllerSpec extends Specification {
         setup:
             User givenUser = new User(userName: 'testUser')
             UserDao dao = new UserDao()
-            dao.save(givenUser)
+            saveUser(sessionUtils, dao, givenUser)
         when:
             TestResponse res = request('GET', '/users/' + givenUser.userId)
         then:
@@ -76,40 +79,10 @@ class UserControllerSpec extends Specification {
         setup:
             User givenUser = new User(userName: 'testUser')
             UserDao dao = new UserDao()
-            dao.save(givenUser)
+            saveUser(sessionUtils, dao, givenUser)
         when:
             request('PUT', '/users/delete/' + givenUser.userId)
         then:
-            !dao.findById(User.class, givenUser.userId)
-    }
-    
-    private static TestResponse request(String method, String path) {
-        try {
-            def url = new URL('http://localhost:4567' + path)
-            def connection = url.openConnection() as HttpURLConnection
-            connection.setRequestMethod(method)
-            connection.setDoOutput(true)
-            connection.connect()
-            def body = IOUtils.toString(connection.inputStream)
-            return new TestResponse(connection.responseCode, body)
-        } catch (IOException e) {
-            e.printStackTrace()
-            return null
-        }
-    }
-    
-    private static class TestResponse {
-        
-        final String body
-        final int status
-        
-        TestResponse(int status, String body) {
-            this.status = status
-            this.body = body
-        }
-        
-        Map<String, String> json() {
-            return new Gson().fromJson(body, HashMap.class)
-        }
+            !findUserById(sessionUtils, dao, givenUser.userId)
     }
 }

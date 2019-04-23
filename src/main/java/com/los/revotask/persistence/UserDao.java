@@ -12,15 +12,13 @@ import java.util.List;
 public class UserDao extends DaoImpl<User> {
 
     public List<User> findByName(String userName) {
-        Session session = sf.openSession();
+        Session session = sf.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
         Root<User> root = criteriaQuery.from(User.class);
         criteriaQuery.select(root).where(builder.equal(root.get("userName"), userName));
         Query<User> query = session.createQuery(criteriaQuery);
-        List<User> result = query.getResultList();
-        session.close();
-        return result;
+        return query.getResultList();
 
     }
 }

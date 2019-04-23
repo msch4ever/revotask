@@ -12,35 +12,33 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Transactional
+@Transactional(Transactional.TxType.SUPPORTS)
 public class TransferService {
 
     private final AccountService accountService;
     private final UserService userService;
     private final TransferDao transferDao;
+    private final SessionUtils sessionUtils;
 
-    public TransferService(AccountService accountService, UserService userService, TransferDao transferDao) {
+    public TransferService(AccountService accountService, UserService userService,
+                           TransferDao transferDao, SessionUtils sessionUtils) {
         this.accountService = accountService;
         this.userService = userService;
         this.transferDao = transferDao;
+        this.sessionUtils = sessionUtils;
     }
 
     public Transfer transferMoney(long sourceUserId, long destinationUserId, BigDecimal amount) {
+        sessionUtils.openAtomicTask();
         User sourceUser = userService.findById(sourceUserId);
         User destinationUser = userService.findById(destinationUserId);
-        validateUsers(sourceUserId, destinationUserId, sourceUser, destinationUser);
+        validateUsers(sourceUser, destinationUser);
         return transferMoney(sourceUser.getAccount(), destinationUser.getAccount(), amount);
     }
 
-    private void validateUsers(long sourceUserId, long destinationUserId, User sourceUser, User destinationUser) {
-        if (sourceUser == null) {
-            throw new IllegalArgumentException("Could not find source user with userId: " + sourceUserId);
-        }
-        if (destinationUser == null) {
-            throw new IllegalArgumentException("Could not find destination user with userId: " + destinationUserId);
-        }
+    private void validateUsers(User sourceUser, User destinationUser) {
         if (sourceUser.equals(destinationUser)) {
-            throw new IllegalArgumentException("Can not perform transfer: source and destination accounts are same!");
+            throw new IllegalArgumentException("Can not perform transfer: source and destination accounts are the same!");
         }
     }
 
@@ -58,6 +56,7 @@ public class TransferService {
         destination.setBalance(info.getDestinationResultBalance());
     }
 
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     private Transfer commitTransfer(Account source, Account destination, TransferInfo info) {
         Transfer transfer = new Transfer(source.getAccountId(), destination.getAccountId(), info);
         Ledger sourceLedger = new Ledger(source.getAccountId(), info.getSourceStartBalance(),
@@ -67,6 +66,7 @@ public class TransferService {
         accountService.updateAccount(source, sourceLedger);
         accountService.updateAccount(destination, destinationLedger);
         saveTransfer(transfer);
+        sessionUtils.commitAndCloseSession();
         return transfer;
     }
 
@@ -75,10 +75,14 @@ public class TransferService {
     }
 
     public List<Transfer> getAll() {
-        return transferDao.getAll(Transfer.class);
+        List<Transfer> resultList = transferDao.getAll(Transfer.class);
+        sessionUtils.commitAndCloseSession();
+        return resultList;
     }
 
     public List<Transfer> findAllByAccountId(long accountId) {
-        return transferDao.findAllByAccountId(accountId);
+        List<Transfer> resultList = transferDao.findAllByAccountId(accountId);
+        sessionUtils.commitAndCloseSession();
+        return resultList;
     }
 }

@@ -1,18 +1,27 @@
 package com.los.revotask.persistasnce
 
-import static com.los.revotask.TestUtils.*
-
 import com.los.revotask.model.user.User
 import com.los.revotask.persistence.UserDao
+import com.los.revotask.service.SessionUtils
 import spock.lang.Specification
+
+import static com.los.revotask.TestUtils.cleanTables
+import static com.los.revotask.TestUtils.decimal
 
 class UserDaoSpec extends Specification {
     
-    UserDao dao
+    private SessionUtils sessionUtils
+    private UserDao dao
     
     void setup() {
-        cleanTables()
+        sessionUtils = new SessionUtils()
+        sessionUtils.openAtomicTask()
         dao = new UserDao()
+    }
+    
+    void cleanup() {
+        sessionUtils.commitAndCloseSession()
+        cleanTables()
     }
     
     void 'Should find User by name'() {
