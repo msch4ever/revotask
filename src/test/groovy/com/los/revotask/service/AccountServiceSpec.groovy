@@ -1,7 +1,5 @@
 package com.los.revotask.service
 
-import static com.los.revotask.TestUtils.*
-
 import com.los.revotask.model.account.Account
 import com.los.revotask.model.account.Ledger
 import com.los.revotask.persistence.Dao
@@ -10,6 +8,8 @@ import spock.lang.Specification
 
 import java.time.Instant
 
+import static com.los.revotask.TestUtils.decimal
+
 class AccountServiceSpec extends Specification {
     
     private AccountService service
@@ -17,7 +17,8 @@ class AccountServiceSpec extends Specification {
     void setup() {
         Dao<Account> accountDao = Mock(Dao)
         Dao<Ledger> ledgerDao = Mock()
-        service = new AccountService(accountDao, ledgerDao)
+        SessionUtils sessionUtils = Mock()
+        service = new AccountService(accountDao, ledgerDao, sessionUtils)
     }
     
     void 'Should create account'() {
@@ -56,11 +57,11 @@ class AccountServiceSpec extends Specification {
         then:
             result == expectedResult
         where:
-            balance             | expectedResult
+            balance      | expectedResult
             decimal(101) | true
             decimal(100) | true
             decimal(50)  | false
-            null                | false
+            null         | false
     }
     
     void 'Should top up the account'() {
@@ -72,7 +73,7 @@ class AccountServiceSpec extends Specification {
             result.getEndBalance() == expectedBalance
             account.getBalance() == expectedBalance
         where:
-            balance             | expectedBalance
+            balance      | expectedBalance
             decimal(100) | decimal(200)
     }
     
@@ -80,13 +81,25 @@ class AccountServiceSpec extends Specification {
         setup:
             Account account = new Account('newAccount', balance)
         when:
-            Optional<Ledger> result = service.withdraw(account, decimal(100))
+            Ledger result = service.withdraw(account, decimal(100))
         then:
-            result.isPresent() == expectedSuccess
+            result
             account.getBalance() == expectedBalance
         where:
-            balance             | expectedBalance    | expectedSuccess
-            decimal(100) | decimal(0)  | true
-            decimal(50)  | decimal(50) | false
+            balance      | expectedBalance
+            decimal(100) | decimal(0)
+    }
+    
+    void 'Should not withdraw cash from the account because not enough balance'() {
+        setup:
+            Account account = new Account('newAccount', balance)
+        when:
+            service.withdraw(account, decimal(100))
+        then:
+            thrown(IllegalArgumentException)
+            account.getBalance() == expectedBalance
+        where:
+            balance      | expectedBalance
+            decimal(50) | decimal(50)
     }
 }

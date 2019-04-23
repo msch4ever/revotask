@@ -1,20 +1,25 @@
 package com.los.revotask.service;
 
 import com.los.revotask.model.user.User;
-import com.los.revotask.persistence.PersistenceContext;
+import com.los.revotask.persistence.UserDao;
+
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Transactional(Transactional.TxType.SUPPORTS)
-public class UserService extends AbstractService {
+public class UserService {
 
-    public UserService(PersistenceContext persistenceContext) {
-        super(persistenceContext);
+    private final UserDao userDao;
+    private final SessionUtils sessionUtils;
+
+    public UserService(UserDao userDao, SessionUtils sessionUtils) {
+        this.userDao = userDao;
+        this.sessionUtils = sessionUtils;
     }
 
     public User createUser(String userName, String accountName, BigDecimal accountAmount) {
-        openAtomicTask();
+        sessionUtils.openAtomicTask();
         if (userName == null || userName.isEmpty()) {
             throw new IllegalArgumentException("userName can not be null");
         }
@@ -24,17 +29,13 @@ public class UserService extends AbstractService {
         } else {
             newUser = new User(userName);
         }
-        getUserDao().save(newUser);
-        int debug = 1;
-        if (debug != 1) {
-            throw new RuntimeException();
-        }
-        commitAndCloseSession();
+        userDao.save(newUser);
+        sessionUtils.commitAndCloseSession();
         return newUser;
     }
 
     public User findById(long id) {
-        User resultUser = getUserDao().findById(User.class, id);
+        User resultUser = userDao.findById(User.class, id);
         if (resultUser == null) {
             throw new IllegalArgumentException("Could not find user with userId: " + id);
         }
@@ -42,48 +43,48 @@ public class UserService extends AbstractService {
     }
 
     public User findByIdAtomic(long id) {
-        openAtomicTask();
+        sessionUtils.openAtomicTask();
         User result = findById(id);
-        commitAndCloseSession();
+        sessionUtils.commitAndCloseSession();
         return result;
     }
 
     public List<User> findByName(String userName) {
-        openAtomicTask();
-        List<User> resultList = getUserDao().findByName(userName);
+        sessionUtils.openAtomicTask();
+        List<User> resultList = userDao.findByName(userName);
         if (resultList == null || resultList.isEmpty()) {
             throw new IllegalArgumentException("Could not find users with userName: " + userName);
         }
-        commitAndCloseSession();
+        sessionUtils.commitAndCloseSession();
         return resultList;
     }
 
     public List<User> getAll() {
-        openAtomicTask();
-        List<User> resultList = getUserDao().getAll(User.class);
-        commitAndCloseSession();
+        sessionUtils.openAtomicTask();
+        List<User> resultList = userDao.getAll(User.class);
+        sessionUtils.commitAndCloseSession();
         return resultList;
     }
 
     public void delete(Long userId) {
-        openAtomicTask();
-        User userToDelete = getUserDao().findById(User.class, userId);
+        sessionUtils.openAtomicTask();
+        User userToDelete = userDao.findById(User.class, userId);
         if (userToDelete == null) {
             throw new IllegalArgumentException("Could not find user with userId: " + userId);
         }
-        getUserDao().delete(userToDelete);
-        commitAndCloseSession();
+        userDao.delete(userToDelete);
+        sessionUtils.commitAndCloseSession();
     }
 
     public User update(Long userId, String newUserName) {
-        openAtomicTask();
+        sessionUtils.openAtomicTask();
         if (newUserName == null || newUserName.isEmpty()) {
             throw new IllegalArgumentException("new userName can not be null");
         }
         User userToUpdate = findById(userId);
         userToUpdate.setUserName(newUserName);
-        getUserDao().update(userToUpdate);
-        commitAndCloseSession();
+        userDao.update(userToUpdate);
+        sessionUtils.commitAndCloseSession();
         return userToUpdate;
     }
 }

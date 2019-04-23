@@ -3,25 +3,29 @@ package com.los.revotask.service;
 import com.los.revotask.model.account.Account;
 import com.los.revotask.model.account.Ledger;
 import com.los.revotask.persistence.Dao;
-import com.los.revotask.persistence.PersistenceContext;
 import com.los.revotask.transaction.EventType;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Transactional(Transactional.TxType.SUPPORTS)
-public class AccountService extends AbstractService {
+public class AccountService {
 
-    public AccountService(final PersistenceContext persistenceContext) {
-        super(persistenceContext);
+    private final Dao<Account> accountDao;
+    private final Dao<Ledger> ledgerDao;
+    private final SessionUtils SessionUtils;
+
+    public AccountService(Dao<Account> accountDao, Dao<Ledger> ledgerDao, SessionUtils SessionUtils) {
+        this.accountDao = accountDao;
+        this.ledgerDao = ledgerDao;
+        this.SessionUtils = SessionUtils;
     }
 
     public long createAccount(String accountName, BigDecimal balance) {
-        openAtomicTask();
-        long id = getAccountDao().save(new Account(accountName, balance));
-        commitAndCloseSession();
+        SessionUtils.openAtomicTask();
+        long id = accountDao.save(new Account(accountName, balance));
+        SessionUtils.commitAndCloseSession();
         return id;
     }
 
@@ -31,14 +35,14 @@ public class AccountService extends AbstractService {
 
     @Transactional(Transactional.TxType.SUPPORTS)
     public void updateAccount(Account account, Ledger ledger) {
-        getAccountDao().update(account);
-        getLedgerDao().save(ledger);
+        accountDao.update(account);
+        ledgerDao.save(ledger);
     }
 
     public List<Account> getAll() {
-        openAtomicTask();
-        List<Account> resultList = getAccountDao().getAll(Account.class);
-        commitAndCloseSession();
+        SessionUtils.openAtomicTask();
+        List<Account> resultList = accountDao.getAll(Account.class);
+        SessionUtils.commitAndCloseSession();
         return resultList;
     }
 
@@ -47,7 +51,7 @@ public class AccountService extends AbstractService {
     }
 
     public Ledger topUp(Account account, BigDecimal amount) {
-        openAtomicTask();
+        SessionUtils.openAtomicTask();
         BigDecimal startBalance = account.getBalance();
         BigDecimal resultBalance = account.getBalance().add(amount);
         account.setBalance(resultBalance);
@@ -55,7 +59,7 @@ public class AccountService extends AbstractService {
     }
 
     public Ledger withdraw(Account account, BigDecimal amount) {
-        openAtomicTask();
+        SessionUtils.openAtomicTask();
         if (!isEnoughBalance(account, amount)) {
             throw new IllegalArgumentException("Not enough balance for operation.");
         }
@@ -69,7 +73,7 @@ public class AccountService extends AbstractService {
                                    BigDecimal amount, EventType type) {
         Ledger ledger = new Ledger(account.getAccountId(), startBalance, endBalance, amount, type);
         updateAccount(account, ledger);
-        commitAndCloseSession();
+        SessionUtils.commitAndCloseSession();
         return ledger;
     }
 }

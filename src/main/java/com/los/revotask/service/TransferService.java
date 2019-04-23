@@ -3,7 +3,6 @@ package com.los.revotask.service;
 import com.los.revotask.model.account.Account;
 import com.los.revotask.model.account.Ledger;
 import com.los.revotask.model.user.User;
-import com.los.revotask.persistence.PersistenceContext;
 import com.los.revotask.persistence.TransferDao;
 import com.los.revotask.transaction.EventType;
 import com.los.revotask.transaction.Transfer;
@@ -14,19 +13,23 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Transactional(Transactional.TxType.SUPPORTS)
-public class TransferService extends AbstractService {
+public class TransferService {
 
     private final AccountService accountService;
     private final UserService userService;
+    private final TransferDao transferDao;
+    private final SessionUtils sessionUtils;
 
-    public TransferService(AccountService accountService, UserService userService, PersistenceContext persistenceContext) {
-        super(persistenceContext);
+    public TransferService(AccountService accountService, UserService userService,
+                           TransferDao transferDao, SessionUtils sessionUtils) {
         this.accountService = accountService;
         this.userService = userService;
+        this.transferDao = transferDao;
+        this.sessionUtils = sessionUtils;
     }
 
     public Transfer transferMoney(long sourceUserId, long destinationUserId, BigDecimal amount) {
-        openAtomicTask();
+        sessionUtils.openAtomicTask();
         User sourceUser = userService.findById(sourceUserId);
         User destinationUser = userService.findById(destinationUserId);
         validateUsers(sourceUser, destinationUser);
@@ -63,27 +66,23 @@ public class TransferService extends AbstractService {
         accountService.updateAccount(source, sourceLedger);
         accountService.updateAccount(destination, destinationLedger);
         saveTransfer(transfer);
-        int debug = 1;
-        if (debug != 1) {
-            throw new RuntimeException();
-        }
-        commitAndCloseSession();
+        sessionUtils.commitAndCloseSession();
         return transfer;
     }
 
     public long saveTransfer(Transfer transfer) {
-        return getTransferDao().save(transfer);
+        return transferDao.save(transfer);
     }
 
     public List<Transfer> getAll() {
-        List<Transfer> resultList = getTransferDao().getAll(Transfer.class);
-        commitAndCloseSession();
+        List<Transfer> resultList = transferDao.getAll(Transfer.class);
+        sessionUtils.commitAndCloseSession();
         return resultList;
     }
 
     public List<Transfer> findAllByAccountId(long accountId) {
-        List<Transfer> resultList = getTransferDao().findAllByAccountId(accountId);
-        commitAndCloseSession();
+        List<Transfer> resultList = transferDao.findAllByAccountId(accountId);
+        sessionUtils.commitAndCloseSession();
         return resultList;
     }
 }

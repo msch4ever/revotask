@@ -12,7 +12,7 @@ import java.util.List;
 public class UserDao extends DaoImpl<User> {
 
     public List<User> findByName(String userName) {
-        Session session = sf.openSession();
+        Session session = sf.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
         Root<User> root = criteriaQuery.from(User.class);

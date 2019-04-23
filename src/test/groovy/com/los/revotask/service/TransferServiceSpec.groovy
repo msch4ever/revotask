@@ -1,15 +1,14 @@
 package com.los.revotask.service
 
-import spock.lang.Unroll
-
-import static com.los.revotask.TestUtils.*
-
 import com.los.revotask.model.account.Account
 import com.los.revotask.model.account.Ledger
 import com.los.revotask.model.user.User
 import com.los.revotask.persistence.TransferDao
 import com.los.revotask.transaction.Transfer
 import spock.lang.Specification
+import spock.lang.Unroll
+
+import static com.los.revotask.TestUtils.decimal
 
 class TransferServiceSpec extends Specification {
     
@@ -19,8 +18,9 @@ class TransferServiceSpec extends Specification {
         AccountService accountService = Mock()
         UserService userService = Mock()
         TransferDao transferDao = Mock()
+        SessionUtils sessionUtils = Mock()
         
-        service = new TransferService(accountService, userService, transferDao)
+        service = new TransferService(accountService, userService, transferDao, sessionUtils)
     }
     
     void "Should save transfer"() {
@@ -70,25 +70,21 @@ class TransferServiceSpec extends Specification {
     @Unroll
     void "Should throw IAE during transfer"() {
         setup:
-            long sourceUserId = 1L
-            long destinationUserId = 2L
-            sourceUser?.setUserId(sourceUserId)
-            destinationUser?.setUserId(destinationUserId)
+            sourceUser.setUserId(sourceUserId)
+            destinationUser.setUserId(destinationUserId)
             BigDecimal amount = decimal(200)
         when:
-            Transfer result = service.transferMoney(1L, 2L, amount)
+            Transfer result = service.transferMoney(sourceUserId, destinationUserId, amount)
         then:
             !result
             thrown(IllegalArgumentException)
-            1 * service.userService.findById(sourceUserId) >> sourceUser
-            1 * service.userService.findById(destinationUserId) >> destinationUser
+            service.userService.findById(sourceUserId) >> sourceUser
+            service.userService.findById(destinationUserId) >> destinationUser
             expInvocations * service.accountService.isEnoughBalance(sourceUser?.account, amount) >> (amount == decimal(150))
             0 * service.accountService.updateAccount(_, _ as Ledger)
         where:
-            sourceUser                                            | destinationUser                                                 | expInvocations
-            new User('sourceUser', 'sourceAccount', decimal(150)) | new User('destinationUser', 'destinationAccount', decimal(150)) | 1
-            new User('sourceUser', 'sourceAccount', decimal(150)) | null                                                            | 0
-            null                                                  | new User('destinationUser', 'destinationAccount', decimal(150)) | 0
-            null                                                  | null                                                            | 0
+            sourceUserId | destinationUserId | sourceUser                                            | destinationUser                                                 | expInvocations
+            1L           | 2L                | new User('sourceUser', 'sourceAccount', decimal(150)) | new User('destinationUser', 'destinationAccount', decimal(150)) | 1
+            1L           | 1L                | new User('sameUser', 'account', decimal(150))         | new User('sameUser', 'account', decimal(150))                   | 0
     }
 }

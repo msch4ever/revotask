@@ -12,7 +12,7 @@ public abstract class AbstractController {
     }
 
     protected void handleException() {
-        exception(IllegalArgumentException.class, (e, req, res) -> {
+        exception(RuntimeException.class, (e, req, res) -> {
             res.status(400);
             res.body(toJson(new ResponseMessage(e)));
         });
