@@ -25,14 +25,14 @@ Explicit requirements:
      
 #Basic project description
   The application is a standalone executable jar. (NOTE: there are already users and account in the DB imported via import.sql)
-  After it is executed a simple UI will appear with two buttons for starting and stoping the server. I decided to implement it
+  After it is executed a simple UI will appear with two buttons for starting and stopping the server. I decided to implement it
   for the sake of convenience: it is annoying when java process still runs in the background when it is not needed anymore, and
   you have to manually end its task in Task Manager.
   
   The project is based on Spark framework for simple lightweight REST server, H2 inmemory DB, Hibernate for ORM and
       Spock framework for testing.
   
-  #Model decription
+  #Model description
     There are four main models: User, Account, Ledger and Transfer
     -User has name and Account, is used like Account holder with unidirectional connection (I thought that potentially User will
         be able to have multiple Accounts, that's why I did not combine those two entities);
@@ -56,4 +56,4 @@ Explicit requirements:
 
 
 
-*there is a littele easter egg. Make sure Sound On when pushing the "Start server" button.
+*there is a little easter egg. Make sure Sound On when pushing the "Start server" button.
