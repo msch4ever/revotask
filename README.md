@@ -52,6 +52,8 @@ Explicit requirements:
   Route providers supply controllers with implementations of Route's finctional interface by exploiting corresponding Services
   
   All responses are represented with JSON. Marshalling and Demarshalling is done by Gson lib.
+  
+  Application is tested with both Unit and Integration tests with 96% class and 80% line coverage.
     
 
 
