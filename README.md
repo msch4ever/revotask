@@ -12,7 +12,7 @@ Explicit requirements:
       a pre-installed container/server).
   7. Demonstrate with tests that the API works as expected.
 
-#API (NOTE: the server runs on localhost:4567)
+# API (NOTE: the server runs on localhost:4567)
   You can find detailed API interaction collection example in "revotask.postman_collection.json" at the root of the project
   Here is a shorter description:
   * name: getAllUsers  , method: GET , url: /users
@@ -22,7 +22,7 @@ Explicit requirements:
   * name: deleteUser   , method: PUT , url: /users/delete/:userId
   * name: transferMoney, method: PUT , url: /transfer?sourceUserId=:userId&destinationUserId=:userId&amount=:amount
      
-#Basic project description
+# Basic project description
   The application is a standalone executable jar. (NOTE: there are already users and account in the DB imported via import.sql)
   After it is executed a simple UI will appear with two buttons for starting and stopping the server. I decided to implement it
   for the sake of convenience: it is annoying when java process still runs in the background when it is not needed anymore, and
@@ -31,7 +31,7 @@ Explicit requirements:
   The project is based on Spark framework for simple lightweight REST server, H2 inmemory DB, Hibernate for ORM and
       Spock framework for testing.
   
-#Model description
+# Model description
   There are four main models: User, Account, Ledger and Transfer
     
   User has name and Account, is used like Account holder with unidirectional connection (I thought that potentially User will
