@@ -28,6 +28,7 @@ public class TransferService {
         this.sessionUtils = sessionUtils;
     }
 
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public Transfer transferMoney(long sourceUserId, long destinationUserId, BigDecimal amount) {
         sessionUtils.openAtomicTask();
         User sourceUser = userService.findById(sourceUserId);
@@ -56,7 +57,6 @@ public class TransferService {
         destination.setBalance(info.getDestinationResultBalance());
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     private Transfer commitTransfer(Account source, Account destination, TransferInfo info) {
         Transfer transfer = new Transfer(source.getAccountId(), destination.getAccountId(), info);
         Ledger sourceLedger = new Ledger(source.getAccountId(), info.getSourceStartBalance(),
