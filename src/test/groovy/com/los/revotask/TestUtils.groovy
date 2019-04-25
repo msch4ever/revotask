@@ -49,10 +49,12 @@ class TestUtils {
             connection.setDoOutput(true)
             connection.connect()
             def body = IOUtils.toString(connection.inputStream)
-            return new TestResponse(connection.responseCode, body)
+            def response = new TestResponse(connection.responseCode, body)
+            connection.disconnect()
+            response
         } catch (IOException e) {
             e.printStackTrace()
-            return null
+            null
         }
     }
 }

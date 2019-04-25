@@ -5,6 +5,8 @@ import com.los.revotask.TestResponse
 import com.los.revotask.model.user.User
 import com.los.revotask.persistence.UserDao
 import com.los.revotask.service.SessionUtils
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import spark.Spark
 import spock.lang.Specification
 
@@ -13,17 +15,25 @@ import static com.los.revotask.TestUtils.*
 class UserControllerSpec extends Specification {
     
     private SessionUtils sessionUtils
-    
-    void setup() {
+
+    @BeforeClass
+    static void beforeClass() {
         ApplicationServer.startServer()
+    }
+
+    void setup() {
         sessionUtils = new SessionUtils()
     }
     
     void cleanup() {
-        Spark.stop()
         cleanTables()
     }
-    
+
+    @AfterClass
+    static void afterClass() {
+        Spark.stop()
+    }
+
     void 'Should create new User'() {
         when:
             TestResponse res = request('POST', '/users?userName=Bill&accountName=main&accountAmount=100.50')
